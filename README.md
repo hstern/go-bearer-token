@@ -63,13 +63,13 @@ token, err := bearer.Token(r)
 switch {
 case errors.Is(err, bearer.ErrNoToken):
 	// No credentials — answer with a bare challenge and 401.
-	bearer.Challenge{Realm: "example"}.WriteHeader(w)
+	bearer.Challenge{Realm: "example"}.Respond(w)
 	return
 case err != nil:
 	// errors.Is(err, bearer.ErrMultipleTokens) or ErrMalformedToken —
 	// both are an invalid_request (400).
 	bearer.Challenge{Realm: "example", Error: bearer.ErrorInvalidRequest,
-		ErrorDescription: err.Error()}.WriteHeader(w)
+		ErrorDescription: err.Error()}.Respond(w)
 	return
 }
 
@@ -94,9 +94,14 @@ c := bearer.Challenge{
 	ErrorDescription: "The access token expired",
 }
 
-c.String()        // Bearer realm="example", error="invalid_token", error_description="The access token expired"
-c.WriteHeader(w)  // sets WWW-Authenticate and writes the status (here, 401)
+c.String()       // Bearer realm="example", error="invalid_token", error_description="The access token expired"
+c.SetHeader(w)   // sets only the WWW-Authenticate header — you write the status/body
+c.Respond(w)     // sets the header and writes the status (here, 401); no body
 ```
+
+Use `Respond` for the common bodyless challenge; use `SetHeader` when the
+response also carries a body (for example a JSON error document), so the
+challenge composes with your own status and body.
 
 The three error codes carry their canonical HTTP status (§3.1):
 

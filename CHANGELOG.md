@@ -6,6 +6,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-20
+
+### Changed
+
+- **Breaking:** split `Challenge.WriteHeader` into two methods. `SetHeader(w)`
+  sets only the `WWW-Authenticate` header (no status, no body), so a challenge
+  composes with a caller that writes its own status and body — e.g. a 401 that
+  also returns a structured error document. `Respond(w)` is the renamed
+  full-response convenience: it sets the header and writes the status, for the
+  common bodyless challenge. The old `WriteHeader` name collided with
+  `http.ResponseWriter.WriteHeader` (status only) yet also set a header and
+  couldn't compose with a separate body writer. Replace `c.WriteHeader(w)` with
+  `c.Respond(w)`, or `c.SetHeader(w)` when you write the response yourself.
+
 ## [0.1.0] - 2026-06-20
 
 Initial release: a standard-library-only implementation of RFC 6750 OAuth 2.0

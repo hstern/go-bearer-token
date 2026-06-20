@@ -13,7 +13,7 @@ import (
 // is a valid bare challenge — String reports just "Bearer" — which is what a
 // resource server returns, with a 401, for a request that carried no
 // credentials. Set Error to one of the Error* codes to turn it into a §3.1
-// error challenge; [Challenge.WriteHeader] then derives the status via
+// error challenge; [Challenge.Respond] then derives the status via
 // [StatusFor].
 //
 // Auth-param values are emitted as quoted-strings with " and \ escaped. Only
@@ -82,13 +82,24 @@ func (c Challenge) String() string {
 	return b.String()
 }
 
-// WriteHeader sets WWW-Authenticate to c.String() on w and writes the HTTP
-// status for c.Error (via [StatusFor]): a bare challenge and invalid_token
-// yield 401, invalid_request 400, insufficient_scope 403. Like
-// http.ResponseWriter.WriteHeader, it must be called before any body is
-// written and only once.
-func (c Challenge) WriteHeader(w http.ResponseWriter) {
+// SetHeader sets the WWW-Authenticate response header to c.String() on w. It
+// writes no status and no body, so it composes with any response the caller
+// builds — use it when you write your own status and body, for example a 401
+// that also carries a structured error document. For the common bodyless
+// challenge, see [Challenge.Respond].
+func (c Challenge) SetHeader(w http.ResponseWriter) {
 	w.Header().Set("WWW-Authenticate", c.String())
+}
+
+// Respond writes a complete bodyless challenge response on w: it sets the
+// WWW-Authenticate header (via [Challenge.SetHeader]) and writes the HTTP status
+// for c.Error (via [StatusFor]) — a bare challenge and invalid_token yield 401,
+// invalid_request 400, insufficient_scope 403. Like
+// http.ResponseWriter.WriteHeader it commits the response, so call it once and
+// before any body. When you need to write your own status or body, call
+// [Challenge.SetHeader] instead and write the response yourself.
+func (c Challenge) Respond(w http.ResponseWriter) {
+	c.SetHeader(w)
 	w.WriteHeader(StatusFor(c.Error))
 }
 
