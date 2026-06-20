@@ -1,0 +1,8 @@
+# Binaries / build output
+/dist/
+*.test
+*.out
+/coverage.*
+# Editor / OS
+.DS_Store
+*.swp
