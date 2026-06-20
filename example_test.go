@@ -22,7 +22,7 @@ func Example_resourceServer() {
 		switch {
 		case errors.Is(err, bearer.ErrNoToken):
 			// No credentials: a bare challenge with 401 (§3).
-			bearer.Challenge{Realm: "example"}.WriteHeader(w)
+			bearer.Challenge{Realm: "example"}.Respond(w)
 			return
 		case err != nil:
 			// Malformed or multiply-presented token: invalid_request / 400.
@@ -30,7 +30,7 @@ func Example_resourceServer() {
 				Realm:            "example",
 				Error:            bearer.ErrorInvalidRequest,
 				ErrorDescription: err.Error(),
-			}.WriteHeader(w)
+			}.Respond(w)
 			return
 		}
 

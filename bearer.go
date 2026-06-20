@@ -27,9 +27,10 @@
 // # Challenge
 //
 // [Challenge] is the typed WWW-Authenticate: Bearer value. Build one, then
-// render it with [Challenge.String] or write it (header plus status) to an
-// http.ResponseWriter with [Challenge.WriteHeader]. [StatusFor] maps a §3.1
-// error code to its canonical HTTP status.
+// render it with [Challenge.String], set just the header with
+// [Challenge.SetHeader], or write a complete bodyless response (header plus
+// status) with [Challenge.Respond]. [StatusFor] maps a §3.1 error code to its
+// canonical HTTP status.
 //
 // Spec: https://www.rfc-editor.org/rfc/rfc6750.html
 package bearer

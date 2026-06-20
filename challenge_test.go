@@ -70,7 +70,7 @@ func TestChallengeString(t *testing.T) {
 	}
 }
 
-func TestChallengeWriteHeader(t *testing.T) {
+func TestChallengeRespond(t *testing.T) {
 	tests := []struct {
 		name       string
 		c          Challenge
@@ -84,7 +84,7 @@ func TestChallengeWriteHeader(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
-			tt.c.WriteHeader(w)
+			tt.c.Respond(w)
 			if w.Code != tt.wantStatus {
 				t.Errorf("status = %d, want %d", w.Code, tt.wantStatus)
 			}
@@ -92,6 +92,20 @@ func TestChallengeWriteHeader(t *testing.T) {
 				t.Errorf("WWW-Authenticate = %q, want %q", got, tt.c.String())
 			}
 		})
+	}
+}
+
+// SetHeader sets only the WWW-Authenticate header — it must not write a status,
+// leaving the caller free to write its own (here the default 200) and a body.
+func TestChallengeSetHeader(t *testing.T) {
+	c := Challenge{Realm: "x", Error: ErrorInsufficientScope, Scope: "read"}
+	w := httptest.NewRecorder()
+	c.SetHeader(w)
+	if got := w.Header().Get("WWW-Authenticate"); got != c.String() {
+		t.Errorf("WWW-Authenticate = %q, want %q", got, c.String())
+	}
+	if w.Code != http.StatusOK {
+		t.Errorf("SetHeader wrote status %d; it must not write a status", w.Code)
 	}
 }
 
