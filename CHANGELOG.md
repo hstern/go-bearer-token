@@ -6,6 +6,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-06-20
+
+Initial release: a standard-library-only implementation of RFC 6750 OAuth 2.0
+Bearer Token Usage.
+
 ### Added
 
 - `Token(r, ...ExtractOption)` — RFC 6750 §2 extraction. Reads the
@@ -25,3 +30,5 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `ErrorInsufficientScope` constants — the §3.1 error codes and their canonical
   HTTP statuses (400 / 401 / 403).
 - `const SpecVersion = "RFC 6750"`.
+
+[0.1.0]: https://github.com/hstern/go-bearer-token/releases/tag/v0.1.0
