@@ -30,5 +30,6 @@ jobs:
         with: { go-version: "1.26" }
       # Run via `go run` so golangci-lint is built with this module's Go
       # toolchain; the prebuilt action binary lags and rejects newer go.mod
-      # versions. Mirrors how the vuln workflow runs govulncheck.
-      - run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run ./...
+      # versions. Mirrors how the vuln workflow runs govulncheck. Pinned for
+      # reproducible CI (matches go-token-introspection).
+      - run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./...
